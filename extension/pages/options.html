@@ -1,0 +1,66 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Verity settings</title>
+  <link rel="stylesheet" href="ui.css">
+</head>
+<body>
+  <main>
+    <div class="brandbar"><img src="../icons/icon32.png" alt="" width="20" height="20"><span>Verity</span></div>
+    <h1>Settings</h1>
+
+    <section class="notice" id="notice">
+      <h2>Please read this first</h2>
+      <p id="disclaimer-text"></p>
+      <ul class="reasons">
+        <li>Verity does not scan page content, passwords or downloads. It only looks at web addresses.</li>
+        <li>Brand names and “real site” suggestions come from lists that can be incomplete or out of date.</li>
+        <li>Verity is not affiliated with any brand it protects, and it is not a replacement for antivirus software or two-step verification.</li>
+      </ul>
+      <label class="check"><input type="checkbox" id="ack"><span>I have read this and understand that Verity can make mistakes.</span></label>
+    </section>
+
+    <h2>Protection</h2>
+    <label class="check"><input type="checkbox" id="enabled"><span>Check websites as I browse</span></label>
+    <label class="check"><input type="checkbox" id="strict"><span>Also stop on weak suspicions (more false alarms, fewer misses)</span></label>
+
+    <h2>My fake sites</h2>
+    <p class="muted">Add a fake or look-alike site and, if you know it, the real one. Verity will warn you and offer the real address.</p>
+    <div class="form-row">
+      <input type="text" id="fake" placeholder="Fake site, e.g. something.site" aria-label="Fake site" autocomplete="off" spellcheck="false">
+      <input type="text" id="real" placeholder="Real site, e.g. something.com" aria-label="Real site (optional)" autocomplete="off" spellcheck="false">
+      <button class="primary" id="add">Add</button>
+    </div>
+    <div class="msg" id="msg" role="status"></div>
+    <table id="list"><thead><tr><th>Fake site</th><th>Real site</th><th></th></tr></thead><tbody></tbody></table>
+    <p id="empty" class="muted">Nothing here yet.</p>
+    <div class="actions">
+      <button id="export">Export list</button>
+      <button id="import-btn">Import list</button>
+      <input type="file" id="import" accept="application/json" hidden>
+    </div>
+
+    <h2>Sites I chose to trust</h2>
+    <table id="allowed"><thead><tr><th>Site</th><th>Until</th><th></th></tr></thead><tbody></tbody></table>
+    <p id="allowed-empty" class="muted">No sites are trusted right now.</p>
+
+    <h2>Update lists</h2>
+    <p class="muted">Verity can download the newest popular-site list (Tranco) and reported scam sites (phishunt). It connects only to those two sites, sends no cookies and nothing about your browsing, and only when you ask. Chrome will ask your permission the first time.</p>
+    <div class="actions">
+      <button class="primary" id="update">Update lists now</button>
+      <button id="reset-lists">Use the lists that came with Verity</button>
+    </div>
+    <div class="msg" id="update-msg" role="status"></div>
+    <ul class="reasons small" id="update-steps"></ul>
+    <label class="check"><input type="checkbox" id="auto"><span>Update automatically every week</span></label>
+
+    <h2>About the data</h2>
+    <p id="data-info" class="muted"></p>
+    <p class="small muted">Everything runs on your device. Verity makes no network requests and sends nothing about the sites you visit to anyone.</p>
+    <p class="small muted">Popularity data: Tranco list (tranco-list.eu), which combines Cisco Umbrella, Majestic, Chrome UX Report and Cloudflare Radar data. Scam reports: phishunt.io (CC0). Attribution and licence terms of the upstream lists apply.</p>
+  </main>
+  <script type="module" src="options.js"></script>
+</body>
+</html>

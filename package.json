@@ -1,0 +1,35 @@
+{
+  "name": "verity",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "Browser extension that warns about look-alike (clone) websites and points to the real one. Runs on your device.",
+  "scripts": {
+    "test": "node --test \"test/*.test.mjs\"",
+    "build": "npm run build:data && npm run build:feed",
+    "build:data": "node scripts/build-data.mjs",
+    "build:feed": "node scripts/build-feed.mjs",
+    "pack": "node scripts/pack.mjs"
+  },
+  "engines": {
+    "node": ">=20.12"
+  },
+  "license": "MIT",
+  "author": "Nur Abir",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/NurAbir/verity.git"
+  },
+  "bugs": {
+    "url": "https://github.com/NurAbir/verity/issues"
+  },
+  "homepage": "https://github.com/NurAbir/verity#readme",
+  "keywords": [
+    "phishing",
+    "browser-extension",
+    "manifest-v3",
+    "security",
+    "lookalike-domains",
+    "typosquatting"
+  ]
+}
