@@ -104,3 +104,33 @@ test('data age and degraded mode are reported', () => {
   assert.equal(check('https://paypa1.com/', state(), makeData({ degraded: true })).degraded, true);
   assert.equal(check('https://paypa1.com/', state(), makeData({ meta: null })).dataAgeDays, null);
 });
+
+test('filter lists: a listed site is blocked, subdomains too, and the reason names the list', () => {
+  for (const u of ['https://evil-download.net/setup', 'https://x.y.evil-download.net/']) {
+    const v = check(u);
+    assert.equal(v.level, 'danger', u);
+    assert.equal(v.action, 'block');
+    assert.equal(v.findings[0].rule, 'blocklist');
+    assert.match(v.findings[0].reason, /Test list/);
+  }
+});
+
+test('filter lists never block a popular site, even if a list names it', () => {
+  assert.equal(check('https://en.wikipedia.org/').level, 'none');
+});
+
+test('listed clone of a known brand also gets the real site offered', () => {
+  const v = check('https://vlc.de/');
+  assert.equal(v.level, 'danger');
+  assert.deepEqual(v.real, [{ domain: 'videolan.org', brand: 'VLC' }]);
+});
+
+test('look-alike rules catch software-download clones even without any list', () => {
+  const data = makeData({ blocklists: [] });
+  for (const u of ['https://vlc.de/', 'https://audacity.de/', 'https://7zip.es/', 'https://bleachbit.com/']) {
+    const v = check(u, state(), data);
+    assert.equal(v.action, 'block', u);
+    assert.ok(v.real.length >= 1, u);
+  }
+  for (const u of ['https://www.videolan.org/', 'https://bleachbit.org/', 'https://www.7-zip.org/']) assert.equal(check(u, state(), data).action, 'none', u);
+});

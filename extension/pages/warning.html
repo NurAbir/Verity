@@ -7,48 +7,69 @@
   <link rel="stylesheet" href="ui.css">
 </head>
 <body data-level="warning">
-  <main>
-    <div class="brandbar"><img src="../icons/icon32.png" alt="" width="20" height="20"><span>Verity</span></div>
-    <h1 id="headline">Checking this address…</h1>
-    <p id="lead"></p>
+  <div class="page">
+    <header class="topbar">
+      <div class="brand"><img src="../icons/icon32.png" alt="" width="28" height="28"><span>Verity</span></div>
+      <button class="btn ghost sm" id="open-settings" type="button"><span data-icon="sliders" data-size="16"></span>Settings</button>
+    </header>
 
-    <div id="data-banner" class="banner" hidden></div>
-
-    <section class="compare" id="compare" aria-label="Address comparison" hidden>
-      <div class="row bad" id="row-visited"><span class="label">You are about to open</span><div class="addr" id="visited"></div></div>
-      <div class="row good" id="row-real" hidden><span class="label">The real site is probably</span><div class="addr real" id="real"></div></div>
-    </section>
-
-    <section id="why" hidden>
-      <h2>Why Verity stopped this</h2>
-      <ul class="reasons" id="reasons"></ul>
-      <p class="muted" id="confidence"></p>
-    </section>
-
-    <div class="actions" id="actions" hidden>
-      <button class="primary" id="go-real" hidden></button>
-      <button id="go-back">Go back</button>
-    </div>
-    <p class="small muted" id="real-caution" hidden>Check that this is the address you meant to visit. Verity’s lists can be incomplete or wrong, and the “real site” shown here is a suggestion, not a guarantee.</p>
-
-    <details class="override" id="override" hidden>
-      <summary>Open this site anyway</summary>
-      <div class="box">
-        <p>Only continue if you are sure you know this site. Fake sites are built to look real and can steal passwords, card numbers and one-time codes.</p>
-        <label class="check"><input type="checkbox" id="understand"><span>I understand the risks and want to continue.</span></label>
-        <div class="actions">
-          <button class="danger" id="open-once" disabled>Open for one hour</button>
-          <button id="open-always" disabled>This site is fine, stop warning me</button>
+    <main>
+      <section class="hero" id="hero" role="alert">
+        <div class="hero-icon"><span id="hero-icon" data-icon="shield-alert" data-size="26"></span></div>
+        <div>
+          <div class="chips"><span id="confidence-chip"></span></div>
+          <h1 id="headline">Checking this address…</h1>
+          <p class="lead" id="lead"></p>
         </div>
-      </div>
-    </details>
+      </section>
 
-    <section class="notice" id="disclaimer">
-      <h2>Verity is a helper, not a guarantee</h2>
-      <p id="disclaimer-text"></p>
-      <p class="small" id="report" hidden><a id="report-link" rel="noreferrer noopener" target="_blank">Report a mistake</a></p>
-    </section>
-  </main>
+      <div class="banner" id="data-banner" hidden><span data-icon="triangle" data-size="18"></span><span id="data-banner-text"></span></div>
+
+      <section class="compare" id="compare" aria-label="Address comparison" hidden>
+        <div class="row bad">
+          <span class="badge"><span data-icon="x" data-size="18"></span></span>
+          <div><span class="label">You are about to open</span><div class="addr" id="visited"></div></div>
+        </div>
+        <div class="row good" id="row-real" hidden>
+          <span class="badge"><span data-icon="check" data-size="18"></span></span>
+          <div><span class="label">The real site is probably</span><div class="addr real" id="real"></div></div>
+        </div>
+      </section>
+      <p class="legend" id="legend" hidden><mark>Highlighted</mark> characters are not in the real address.</p>
+
+      <div class="actions" id="actions" hidden>
+        <button class="btn primary lg" id="go-primary" type="button"></button>
+        <button class="btn lg" id="go-back" type="button">Go back</button>
+      </div>
+      <p class="hint" id="real-caution" hidden>Check that this is the address you meant to visit. Verity’s lists can be incomplete or wrong, so the real site shown is a suggestion, not a guarantee.</p>
+
+      <section class="block" id="why" hidden>
+        <h2>Why Verity stopped this</h2>
+        <ul class="findings" id="reasons"></ul>
+        <div class="meter" id="meter"><span class="bars"><i></i><i></i><i></i></span><span id="meter-text"></span></div>
+      </section>
+
+      <details class="override" id="override" hidden>
+        <summary>I know this site. Open it anyway…</summary>
+        <div class="box">
+          <p>Only continue if you are sure you know this site. Fake sites are built to look real and can steal passwords, card numbers and one-time codes.</p>
+          <label class="check"><input type="checkbox" id="understand"><span>I understand the risks and want to continue.</span></label>
+          <div class="actions">
+            <button class="btn danger" id="open-once" type="button" disabled>Open for one hour</button>
+            <button class="btn" id="open-always" type="button" disabled>This site is fine, stop warning me</button>
+          </div>
+        </div>
+      </details>
+
+      <aside class="footnote">
+        <span data-icon="info" data-size="18"></span>
+        <div>
+          <span id="disclaimer-text"></span>
+          <span id="report" hidden> <a id="report-link" rel="noreferrer noopener" target="_blank">Report a mistake</a></span>
+        </div>
+      </aside>
+    </main>
+  </div>
   <script type="module" src="warning.js"></script>
 </body>
 </html>

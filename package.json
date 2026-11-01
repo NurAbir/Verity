@@ -1,6 +1,6 @@
 {
   "name": "verity",
-  "version": "0.1.0",
+  "version": "1.0.0",
   "private": true,
   "type": "module",
   "description": "Browser extension that warns about look-alike (clone) websites and points to the real one. Runs on your device.",

@@ -1,12 +1,14 @@
 // In-browser equivalent of `npm run build:data` + `npm run build:feed`.
 // Pure with respect to the browser: fetch and storage are injected, so it is unit-tested in Node.
 // Design rules: never write anything unless a step succeeded; a failed step leaves the old data in place.
-import { CONFIG, SOURCES } from '../config.js';
+import { BLOCKLISTS, CONFIG, SOURCES } from '../config.js';
+import { parseBlocklist } from '../core/blocklist.js';
 import { buildDatasets, parseRankedCsv } from '../core/datasets.js';
 import { DomainSet, packDomains } from '../core/domainset.js';
 import { buildFeed } from '../core/feed.js';
 import { firstZipEntry } from '../core/zip.js';
 
+const fmt = (n) => n.toLocaleString('en-US');
 const isZip = (b) => b.length > 3 && b[0] === 0x50 && b[1] === 0x4b;
 const REQUEST = { cache: 'no-store', credentials: 'omit', referrerPolicy: 'no-referrer' }; // no cookies, no referrer
 
@@ -62,7 +64,7 @@ export async function fetchRankedDomains(fetchFn, url, limit = Infinity) {
 /**
  * @returns {Promise<{at:number, ok:boolean, partial:boolean, wrote:string[], steps:{name:string, ok:boolean, detail?:string, error?:string}[]}>}
  */
-export async function runUpdate({ fetchFn = fetch, store, brands = [], current = {}, now = Date.now(), onProgress = () => {}, limits = {} }) {
+export async function runUpdate({ fetchFn = fetch, store, brands = [], current = {}, now = Date.now(), onProgress = () => {}, limits = {}, lists = BLOCKLISTS.filter((b) => !b.optional) }) {
   const L = { trustedCount: CONFIG.TRUSTED_COUNT, extendedTotal: CONFIG.EXTENDED_TOTAL, topLabels: CONFIG.TOP_LABELS, minTrusted: CONFIG.MIN_TRUSTED_SITES, ...limits };
   const steps = [];
   const writes = {};
@@ -81,7 +83,7 @@ export async function runUpdate({ fetchFn = fetch, store, brands = [], current =
     const list = await fetchRankedDomains(fetchFn, SOURCES.trancoTop, L.trustedCount);
     if (list.length < L.minTrusted) throw new Error(`The download has only ${list.length} sites, so it was ignored`);
     trustedRanked = list;
-    return `${list.length} sites`;
+    return `${fmt(list.length)} sites`;
   });
 
   if (trustedRanked) {
@@ -89,7 +91,7 @@ export async function runUpdate({ fetchFn = fetch, store, brands = [], current =
       const id = (await (await get(fetchFn, SOURCES.trancoId)).text()).trim();
       if (!/^[A-Za-z0-9]{3,12}$/.test(id)) throw new Error('Unexpected list ID from tranco-list.eu');
       fullRanked = await fetchRankedDomains(fetchFn, SOURCES.trancoFull(id), L.extendedTotal + 100_000);
-      return `${fullRanked.length} sites`;
+      return `${fmt(fullRanked.length)} sites`;
     });
     const sets = buildDatasets({ trustedRanked, fullRanked, trustedCount: L.trustedCount, extendedTotal: L.extendedTotal, topLabelCount: L.topLabels });
     writes.trusted = packDomains(sets.trusted);
@@ -103,8 +105,31 @@ export async function runUpdate({ fetchFn = fetch, store, brands = [], current =
     const rows = await (await get(fetchFn, SOURCES.phishFeed)).json();
     if (!Array.isArray(rows)) throw new Error('Unexpected feed format');
     writes.feed = buildFeed(rows, { brands, isTrusted: (d) => trustedSet?.has(d) ?? false, previous: current.feed, now });
-    return `${Object.keys(writes.feed.hosts).length} addresses`;
+    return `${fmt(Object.keys(writes.feed.hosts).length)} addresses`;
   });
+
+  // Filter lists: each is independent; a failed one keeps its previous copy.
+  const built_lists = {};
+  for (const src of lists) {
+    await step(src.title, async () => {
+      let text;
+      let failure;
+      for (const url of src.urls) {
+        try { text = await (await get(fetchFn, url)).text(); break; } catch (err) { failure = err; }
+      }
+      if (text === undefined) throw failure;
+      const { hosts } = parseBlocklist(text);
+      if (hosts.length < (src.minEntries ?? 1)) throw new Error(`Only ${hosts.length} usable entries, so it was ignored`);
+      writes[`bl-${src.id}`] = packDomains(hosts);
+      built_lists[src.id] = { id: src.id, title: src.title, license: src.license, count: hosts.length };
+      return `${fmt(hosts.length)} addresses`;
+    });
+  }
+  if (writes.feed || Object.keys(built_lists).length) {
+    const active = new Set(lists.map((l) => l.id));
+    const kept = (current.feed?.blocklists ?? []).filter((l) => !(l.id in built_lists) && active.has(l.id)); // switched-off lists are dropped
+    writes.feed = { ...(writes.feed ?? current.feed ?? { hosts: {}, domains: {} }), blocklists: [...kept, ...Object.values(built_lists)] };
+  }
 
   if (Object.keys(writes).length) {
     const iso = new Date(now).toISOString();

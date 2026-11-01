@@ -1,7 +1,7 @@
 {
   "manifest_version": 3,
   "name": "Verity",
-  "version": "0.1.0",
+  "version": "1.0.0",
   "description": "Warns you when a website looks like a copy of a well-known one and shows you the real address. Checks run on your device.",
   "minimum_chrome_version": "110",
   "permissions": [
@@ -37,6 +37,9 @@
   },
   "optional_host_permissions": [
     "https://tranco-list.eu/*",
-    "https://phishunt.io/*"
+    "https://phishunt.io/*",
+    "https://ublockorigin.github.io/*",
+    "https://curbengh.github.io/*",
+    "https://raw.githubusercontent.com/*"
   ]
 }

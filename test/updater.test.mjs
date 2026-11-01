@@ -1,7 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { DomainSet } from '../extension/src/core/domainset.js';
-import { SOURCES } from '../extension/src/config.js';
+import { BLOCKLISTS, SOURCES } from '../extension/src/config.js';
 import { fetchRankedDomains, runUpdate } from '../extension/src/updater/updater.js';
 import { makeZip } from '../scripts/lib/zip-write.mjs';
 import { brands, NOW } from './helpers.mjs';
@@ -23,8 +23,12 @@ function fakeFetch(routes, log = []) {
   };
 }
 
+const listText = (id, n = 600) => Array.from({ length: n }, (_, i) => `||bad${i}-${id}.net^$doc`).join('\n');
+
 function routes({ top = 200, full = 400, feed = [{ domain: 'login.evil-pay.top', company: 'PayPal' }] } = {}) {
+  const lists = Object.fromEntries(BLOCKLISTS.map((b) => [b.urls[0], () => new Response(listText(b.id, b.optional ? 10_500 : 600))]));
   return {
+    ...lists,
     [SOURCES.trancoTop]: () => new Response(makeZip([{ name: 'top-1m.csv', data: csv(names(top)) }])),
     [SOURCES.trancoId]: () => new Response('ABCDE\n'),
     [SOURCES.trancoFull('ABCDE')]: () => new Response(csv(names(full))),
@@ -36,7 +40,9 @@ test('update: downloads, builds and stores every list in one write', async () =>
   const store = memoryStore();
   const report = await runUpdate({ fetchFn: fakeFetch(routes()), store, brands, now: NOW, limits: LIMITS });
   assert.equal(report.ok, true);
-  assert.deepEqual(report.wrote.sort(), ['extended', 'feed', 'meta', 'toplabels', 'trusted']);
+  assert.deepEqual(report.wrote.sort(), ['bl-phishing-filter', 'bl-ubo-badware', 'extended', 'feed', 'meta', 'toplabels', 'trusted']);
+  assert.deepEqual(store.data.feed.blocklists.map((l) => [l.id, l.count]), [['ubo-badware', 600], ['phishing-filter', 600]]);
+  assert.ok(new DomainSet(store.data['bl-ubo-badware']).has('bad5-ubo-badware.net'));
   const trusted = new DomainSet(store.data.trusted);
   const extended = new DomainSet(store.data.extended);
   assert.equal(trusted.size, 100);
@@ -50,7 +56,7 @@ test('update: downloads, builds and stores every list in one write', async () =>
 test('update: requests carry no cookies and no referrer, and go only to the configured sources', async () => {
   const log = [];
   await runUpdate({ fetchFn: fakeFetch(routes(), log), store: memoryStore(), brands, now: NOW, limits: LIMITS });
-  const allowed = new Set([SOURCES.trancoTop, SOURCES.trancoId, SOURCES.trancoFull('ABCDE'), SOURCES.phishFeed]);
+  const allowed = new Set([SOURCES.trancoTop, SOURCES.trancoId, SOURCES.trancoFull('ABCDE'), SOURCES.phishFeed, ...BLOCKLISTS.flatMap((b) => b.urls)]);
   assert.ok(log.length >= 4);
   for (const { url, init } of log) {
     assert.ok(allowed.has(url), url);
@@ -121,4 +127,48 @@ test('zip and plain downloads give the same list', async () => {
   const plain = await fetchRankedDomains(async () => new Response(csv(list)), 'https://x.test/b');
   assert.deepEqual(zip, list);
   assert.deepEqual(plain, list);
+});
+
+test('filter lists: a mirror is used when the main address fails', async () => {
+  const r = routes();
+  const b = BLOCKLISTS[0];
+  delete r[b.urls[0]];
+  r[b.urls[1]] = () => new Response(listText(b.id));
+  const store = memoryStore();
+  const report = await runUpdate({ fetchFn: fakeFetch(r), store, brands, now: NOW, limits: LIMITS });
+  assert.equal(report.ok, true);
+  assert.ok(store.data[`bl-${b.id}`]);
+});
+
+test('filter lists: a failed or too-small list keeps its previous copy and entry', async () => {
+  const r = routes();
+  const [a, b] = BLOCKLISTS.filter((x) => !x.optional);
+  delete r[a.urls[0]];                                   // list A unreachable
+  r[b.urls[0]] = () => new Response(listText(b.id, 10)); // list B suspiciously small
+  const old = { id: a.id, title: a.title, license: a.license, count: 999 };
+  const store = memoryStore({ [`bl-${a.id}`]: 'OLD-A' });
+  const report = await runUpdate({ fetchFn: fakeFetch(r), store, brands, now: NOW, limits: LIMITS, current: { feed: { hosts: {}, domains: {}, blocklists: [old] } } });
+  assert.equal(report.ok, false);
+  assert.equal(store.data[`bl-${a.id}`], 'OLD-A');
+  assert.equal(store.data[`bl-${b.id}`], undefined);
+  assert.deepEqual(store.data.feed.blocklists, [old]);
+});
+
+test('optional lists are downloaded only when switched on, and dropped when switched off', async () => {
+  const optional = BLOCKLISTS.find((b) => b.optional);
+  const log = [];
+  const off = memoryStore();
+  await runUpdate({ fetchFn: fakeFetch(routes(), log), store: off, brands, now: NOW, limits: LIMITS });
+  assert.ok(!log.some((l) => optional.urls.includes(l.url)), 'not requested while off');
+  assert.ok(!(`bl-${optional.id}` in off.data));
+
+  const on = memoryStore();
+  const report = await runUpdate({ fetchFn: fakeFetch(routes()), store: on, brands, now: NOW, limits: LIMITS, lists: BLOCKLISTS });
+  assert.equal(report.ok, true);
+  assert.equal(on.data.feed.blocklists.length, BLOCKLISTS.length);
+  assert.ok(new DomainSet(on.data[`bl-${optional.id}`]).size >= 10_000);
+
+  const later = memoryStore();
+  await runUpdate({ fetchFn: fakeFetch(routes()), store: later, brands, now: NOW, limits: LIMITS, current: { feed: on.data.feed } });
+  assert.ok(!later.data.feed.blocklists.some((l) => l.id === optional.id), 'switched-off list removed from the feed');
 });

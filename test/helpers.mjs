@@ -12,6 +12,7 @@ export function makeData(over = {}) {
     brandIndex: buildBrandIndex(brands, [['wikipedia', 'wikipedia.org'], ['mozilla', 'mozilla.org']]),
     feed: { hosts: { 'login.evil-bank.xyz': 'paypal' }, domains: { 'evil-bank.xyz': 'paypal' } },
     brands,
+    blocklists: [{ id: 'test', title: 'Test list', set: new DomainSet(packDomains(['evil-download.net', 'vlc.de', 'wikipedia.org'])) }],
     meta: { builtAt: '2026-10-01T00:00:00Z' },
     degraded: false,
     ...over,

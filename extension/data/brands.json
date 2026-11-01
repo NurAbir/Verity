@@ -1,46 +1,455 @@
 [
-  { "id": "google", "name": "Google", "domains": ["google.com", "gmail.com"], "aliases": ["gmail"] },
-  { "id": "youtube", "name": "YouTube", "domains": ["youtube.com", "youtu.be"] },
-  { "id": "facebook", "name": "Facebook", "domains": ["facebook.com", "fb.com", "messenger.com"], "aliases": ["fb"] },
-  { "id": "instagram", "name": "Instagram", "domains": ["instagram.com"] },
-  { "id": "whatsapp", "name": "WhatsApp", "domains": ["whatsapp.com"] },
-  { "id": "microsoft", "name": "Microsoft", "domains": ["microsoft.com", "live.com", "office.com", "outlook.com", "microsoftonline.com"], "aliases": ["outlook", "office365"] },
-  { "id": "apple", "name": "Apple", "domains": ["apple.com", "icloud.com"], "aliases": ["icloud"] },
-  { "id": "amazon", "name": "Amazon", "domains": ["amazon.com", "amazon.co.uk"] },
-  { "id": "paypal", "name": "PayPal", "domains": ["paypal.com"] },
-  { "id": "netflix", "name": "Netflix", "domains": ["netflix.com"] },
-  { "id": "linkedin", "name": "LinkedIn", "domains": ["linkedin.com"] },
-  { "id": "twitter", "name": "X (Twitter)", "domains": ["twitter.com", "x.com"] },
-  { "id": "github", "name": "GitHub", "domains": ["github.com"] },
-  { "id": "dropbox", "name": "Dropbox", "domains": ["dropbox.com"] },
-  { "id": "adobe", "name": "Adobe", "domains": ["adobe.com"] },
-  { "id": "spotify", "name": "Spotify", "domains": ["spotify.com"] },
-  { "id": "ebay", "name": "eBay", "domains": ["ebay.com"] },
-  { "id": "walmart", "name": "Walmart", "domains": ["walmart.com"] },
-  { "id": "chase", "name": "Chase", "domains": ["chase.com"] },
-  { "id": "wellsfargo", "name": "Wells Fargo", "domains": ["wellsfargo.com"] },
-  { "id": "bankofamerica", "name": "Bank of America", "domains": ["bankofamerica.com"] },
-  { "id": "hsbc", "name": "HSBC", "domains": ["hsbc.com"] },
-  { "id": "citi", "name": "Citi", "domains": ["citi.com"] },
-  { "id": "dhl", "name": "DHL", "domains": ["dhl.com"] },
-  { "id": "fedex", "name": "FedEx", "domains": ["fedex.com"] },
-  { "id": "ups", "name": "UPS", "domains": ["ups.com"] },
-  { "id": "usps", "name": "USPS", "domains": ["usps.com"] },
-  { "id": "binance", "name": "Binance", "domains": ["binance.com"] },
-  { "id": "coinbase", "name": "Coinbase", "domains": ["coinbase.com"] },
-  { "id": "metamask", "name": "MetaMask", "domains": ["metamask.io"] },
-  { "id": "telegram", "name": "Telegram", "domains": ["telegram.org"] },
-  { "id": "discord", "name": "Discord", "domains": ["discord.com"] },
-  { "id": "steam", "name": "Steam", "domains": ["steampowered.com", "steamcommunity.com"], "aliases": ["steam"] },
-  { "id": "roblox", "name": "Roblox", "domains": ["roblox.com"] },
-  { "id": "zoom", "name": "Zoom", "domains": ["zoom.us"] },
-  { "id": "yahoo", "name": "Yahoo", "domains": ["yahoo.com"] },
-  { "id": "aliexpress", "name": "AliExpress", "domains": ["aliexpress.com"] },
-  { "id": "alibaba", "name": "Alibaba", "domains": ["alibaba.com"] },
-  { "id": "daraz", "name": "Daraz", "domains": ["daraz.com.bd"] },
-  { "id": "bkash", "name": "bKash", "domains": ["bkash.com"] },
-  { "id": "nagad", "name": "Nagad", "domains": ["nagad.com.bd"] },
-  { "id": "bracbank", "name": "BRAC Bank", "domains": ["bracbank.com"] },
-  { "id": "bracu", "name": "BRAC University", "domains": ["bracu.ac.bd"] },
-  { "id": "pathao", "name": "Pathao", "domains": ["pathao.com"] }
+ {
+  "id": "google",
+  "name": "Google",
+  "domains": [
+   "google.com",
+   "gmail.com"
+  ],
+  "aliases": [
+   "gmail"
+  ]
+ },
+ {
+  "id": "youtube",
+  "name": "YouTube",
+  "domains": [
+   "youtube.com",
+   "youtu.be"
+  ]
+ },
+ {
+  "id": "facebook",
+  "name": "Facebook",
+  "domains": [
+   "facebook.com",
+   "fb.com",
+   "messenger.com"
+  ],
+  "aliases": [
+   "fb"
+  ]
+ },
+ {
+  "id": "instagram",
+  "name": "Instagram",
+  "domains": [
+   "instagram.com"
+  ]
+ },
+ {
+  "id": "whatsapp",
+  "name": "WhatsApp",
+  "domains": [
+   "whatsapp.com"
+  ]
+ },
+ {
+  "id": "microsoft",
+  "name": "Microsoft",
+  "domains": [
+   "microsoft.com",
+   "live.com",
+   "office.com",
+   "outlook.com",
+   "microsoftonline.com"
+  ],
+  "aliases": [
+   "outlook",
+   "office365"
+  ]
+ },
+ {
+  "id": "apple",
+  "name": "Apple",
+  "domains": [
+   "apple.com",
+   "icloud.com"
+  ],
+  "aliases": [
+   "icloud"
+  ]
+ },
+ {
+  "id": "amazon",
+  "name": "Amazon",
+  "domains": [
+   "amazon.com",
+   "amazon.co.uk"
+  ]
+ },
+ {
+  "id": "paypal",
+  "name": "PayPal",
+  "domains": [
+   "paypal.com"
+  ]
+ },
+ {
+  "id": "netflix",
+  "name": "Netflix",
+  "domains": [
+   "netflix.com"
+  ]
+ },
+ {
+  "id": "linkedin",
+  "name": "LinkedIn",
+  "domains": [
+   "linkedin.com"
+  ]
+ },
+ {
+  "id": "twitter",
+  "name": "X (Twitter)",
+  "domains": [
+   "twitter.com",
+   "x.com"
+  ]
+ },
+ {
+  "id": "github",
+  "name": "GitHub",
+  "domains": [
+   "github.com"
+  ]
+ },
+ {
+  "id": "dropbox",
+  "name": "Dropbox",
+  "domains": [
+   "dropbox.com"
+  ]
+ },
+ {
+  "id": "adobe",
+  "name": "Adobe",
+  "domains": [
+   "adobe.com"
+  ]
+ },
+ {
+  "id": "spotify",
+  "name": "Spotify",
+  "domains": [
+   "spotify.com"
+  ]
+ },
+ {
+  "id": "ebay",
+  "name": "eBay",
+  "domains": [
+   "ebay.com"
+  ]
+ },
+ {
+  "id": "walmart",
+  "name": "Walmart",
+  "domains": [
+   "walmart.com"
+  ]
+ },
+ {
+  "id": "chase",
+  "name": "Chase",
+  "domains": [
+   "chase.com"
+  ]
+ },
+ {
+  "id": "wellsfargo",
+  "name": "Wells Fargo",
+  "domains": [
+   "wellsfargo.com"
+  ]
+ },
+ {
+  "id": "bankofamerica",
+  "name": "Bank of America",
+  "domains": [
+   "bankofamerica.com"
+  ]
+ },
+ {
+  "id": "hsbc",
+  "name": "HSBC",
+  "domains": [
+   "hsbc.com"
+  ]
+ },
+ {
+  "id": "citi",
+  "name": "Citi",
+  "domains": [
+   "citi.com"
+  ]
+ },
+ {
+  "id": "dhl",
+  "name": "DHL",
+  "domains": [
+   "dhl.com"
+  ]
+ },
+ {
+  "id": "fedex",
+  "name": "FedEx",
+  "domains": [
+   "fedex.com"
+  ]
+ },
+ {
+  "id": "ups",
+  "name": "UPS",
+  "domains": [
+   "ups.com"
+  ]
+ },
+ {
+  "id": "usps",
+  "name": "USPS",
+  "domains": [
+   "usps.com"
+  ]
+ },
+ {
+  "id": "binance",
+  "name": "Binance",
+  "domains": [
+   "binance.com"
+  ]
+ },
+ {
+  "id": "coinbase",
+  "name": "Coinbase",
+  "domains": [
+   "coinbase.com"
+  ]
+ },
+ {
+  "id": "metamask",
+  "name": "MetaMask",
+  "domains": [
+   "metamask.io"
+  ]
+ },
+ {
+  "id": "telegram",
+  "name": "Telegram",
+  "domains": [
+   "telegram.org"
+  ]
+ },
+ {
+  "id": "discord",
+  "name": "Discord",
+  "domains": [
+   "discord.com"
+  ]
+ },
+ {
+  "id": "steam",
+  "name": "Steam",
+  "domains": [
+   "steampowered.com",
+   "steamcommunity.com"
+  ],
+  "aliases": [
+   "steam"
+  ]
+ },
+ {
+  "id": "roblox",
+  "name": "Roblox",
+  "domains": [
+   "roblox.com"
+  ]
+ },
+ {
+  "id": "zoom",
+  "name": "Zoom",
+  "domains": [
+   "zoom.us"
+  ]
+ },
+ {
+  "id": "yahoo",
+  "name": "Yahoo",
+  "domains": [
+   "yahoo.com"
+  ]
+ },
+ {
+  "id": "aliexpress",
+  "name": "AliExpress",
+  "domains": [
+   "aliexpress.com"
+  ]
+ },
+ {
+  "id": "alibaba",
+  "name": "Alibaba",
+  "domains": [
+   "alibaba.com"
+  ]
+ },
+ {
+  "id": "daraz",
+  "name": "Daraz",
+  "domains": [
+   "daraz.com.bd"
+  ]
+ },
+ {
+  "id": "bkash",
+  "name": "bKash",
+  "domains": [
+   "bkash.com"
+  ]
+ },
+ {
+  "id": "nagad",
+  "name": "Nagad",
+  "domains": [
+   "nagad.com.bd"
+  ]
+ },
+ {
+  "id": "bracbank",
+  "name": "BRAC Bank",
+  "domains": [
+   "bracbank.com"
+  ]
+ },
+ {
+  "id": "bracu",
+  "name": "BRAC University",
+  "domains": [
+   "bracu.ac.bd"
+  ]
+ },
+ {
+  "id": "pathao",
+  "name": "Pathao",
+  "domains": [
+   "pathao.com"
+  ]
+ },
+ {
+  "id": "vlc",
+  "name": "VLC",
+  "domains": [
+   "videolan.org"
+  ],
+  "aliases": [
+   "vlc"
+  ]
+ },
+ {
+  "id": "audacity",
+  "name": "Audacity",
+  "domains": [
+   "audacityteam.org"
+  ],
+  "aliases": [
+   "audacity"
+  ]
+ },
+ {
+  "id": "7zip",
+  "name": "7-Zip",
+  "domains": [
+   "7-zip.org"
+  ],
+  "aliases": [
+   "7zip"
+  ]
+ },
+ {
+  "id": "bleachbit",
+  "name": "BleachBit",
+  "domains": [
+   "bleachbit.org"
+  ]
+ },
+ {
+  "id": "blender",
+  "name": "Blender",
+  "domains": [
+   "blender.org"
+  ],
+  "aliases": [
+   "blender3d"
+  ]
+ },
+ {
+  "id": "gimp",
+  "name": "GIMP",
+  "domains": [
+   "gimp.org"
+  ]
+ },
+ {
+  "id": "obs",
+  "name": "OBS Studio",
+  "domains": [
+   "obsproject.com"
+  ],
+  "aliases": [
+   "obsstudio"
+  ]
+ },
+ {
+  "id": "notepadpp",
+  "name": "Notepad++",
+  "domains": [
+   "notepad-plus-plus.org"
+  ]
+ },
+ {
+  "id": "qbittorrent",
+  "name": "qBittorrent",
+  "domains": [
+   "qbittorrent.org"
+  ]
+ },
+ {
+  "id": "libreoffice",
+  "name": "LibreOffice",
+  "domains": [
+   "libreoffice.org"
+  ]
+ },
+ {
+  "id": "firefox",
+  "name": "Mozilla Firefox",
+  "domains": [
+   "mozilla.org",
+   "firefox.com"
+  ],
+  "aliases": [
+   "firefox"
+  ]
+ },
+ {
+  "id": "thunderbird",
+  "name": "Thunderbird",
+  "domains": [
+   "thunderbird.net"
+  ]
+ },
+ {
+  "id": "winrar",
+  "name": "WinRAR",
+  "domains": [
+   "win-rar.com"
+  ]
+ },
+ {
+  "id": "calibre",
+  "name": "calibre",
+  "domains": [
+   "calibre-ebook.com"
+  ]
+ }
 ]

@@ -7,60 +7,102 @@
   <link rel="stylesheet" href="ui.css">
 </head>
 <body>
-  <main>
-    <div class="brandbar"><img src="../icons/icon32.png" alt="" width="20" height="20"><span>Verity</span></div>
-    <h1>Settings</h1>
+  <div class="layout">
+    <header class="topbar">
+      <div class="brand"><img src="../icons/icon32.png" alt="" width="30" height="30"><span>Verity</span><span class="chip chip-neutral" id="version"></span></div>
+    </header>
 
-    <section class="notice" id="notice">
-      <h2>Please read this first</h2>
-      <p id="disclaimer-text"></p>
-      <ul class="reasons">
-        <li>Verity does not scan page content, passwords or downloads. It only looks at web addresses.</li>
-        <li>Brand names and “real site” suggestions come from lists that can be incomplete or out of date.</li>
-        <li>Verity is not affiliated with any brand it protects, and it is not a replacement for antivirus software or two-step verification.</li>
-      </ul>
-      <label class="check"><input type="checkbox" id="ack"><span>I have read this and understand that Verity can make mistakes.</span></label>
-    </section>
+    <nav class="sidenav" aria-label="Settings sections">
+      <a href="#overview"><span data-icon="home" data-size="18"></span>Overview</a>
+      <a href="#protection"><span data-icon="shield-check" data-size="18"></span>Protection</a>
+      <a href="#mine"><span data-icon="list" data-size="18"></span>My fake sites</a>
+      <a href="#trusted"><span data-icon="user" data-size="18"></span>Trusted sites</a>
+      <a href="#lists"><span data-icon="refresh" data-size="18"></span>Lists and updates</a>
+      <a href="#about"><span data-icon="info" data-size="18"></span>About and privacy</a>
+    </nav>
 
-    <h2>Protection</h2>
-    <label class="check"><input type="checkbox" id="enabled"><span>Check websites as I browse</span></label>
-    <label class="check"><input type="checkbox" id="strict"><span>Also stop on weak suspicions (more false alarms, fewer misses)</span></label>
+    <main class="cards">
+      <section class="card notice" id="notice" hidden>
+        <h2><span data-icon="triangle" data-size="22"></span>Before you start</h2>
+        <p id="disclaimer-text"></p>
+        <ul>
+          <li>Verity looks at web addresses only. It does not read page content, passwords or downloads.</li>
+          <li>Brand names and “real site” suggestions come from lists that can be incomplete or out of date.</li>
+          <li>It is not affiliated with any brand it protects, and it does not replace antivirus software or two-step verification.</li>
+        </ul>
+        <button class="btn primary" id="ack" type="button">I understand</button>
+      </section>
 
-    <h2>My fake sites</h2>
-    <p class="muted">Add a fake or look-alike site and, if you know it, the real one. Verity will warn you and offer the real address.</p>
-    <div class="form-row">
-      <input type="text" id="fake" placeholder="Fake site, e.g. something.site" aria-label="Fake site" autocomplete="off" spellcheck="false">
-      <input type="text" id="real" placeholder="Real site, e.g. something.com" aria-label="Real site (optional)" autocomplete="off" spellcheck="false">
-      <button class="primary" id="add">Add</button>
-    </div>
-    <div class="msg" id="msg" role="status"></div>
-    <table id="list"><thead><tr><th>Fake site</th><th>Real site</th><th></th></tr></thead><tbody></tbody></table>
-    <p id="empty" class="muted">Nothing here yet.</p>
-    <div class="actions">
-      <button id="export">Export list</button>
-      <button id="import-btn">Import list</button>
-      <input type="file" id="import" accept="application/json" hidden>
-    </div>
+      <section class="card" id="overview">
+        <div class="status-line">
+          <div class="big"><span class="dot" id="state-dot"></span><span id="state-text">Protection is on</span></div>
+          <span id="fresh-chip"></span>
+        </div>
+        <div class="stats">
+          <div class="stat"><b id="n-trusted">0</b><span>Popular sites</span></div>
+          <div class="stat"><b id="n-extended">0</b><span>Known sites</span></div>
+          <div class="stat"><b id="n-feed">0</b><span>Reported scam sites</span></div>
+          <div class="stat"><b id="n-lists">0</b><span>Filter lists</span></div>
+        </div>
+      </section>
 
-    <h2>Sites I chose to trust</h2>
-    <table id="allowed"><thead><tr><th>Site</th><th>Until</th><th></th></tr></thead><tbody></tbody></table>
-    <p id="allowed-empty" class="muted">No sites are trusted right now.</p>
+      <section class="card" id="protection">
+        <h2><span data-icon="shield-check" data-size="22"></span>Protection</h2>
+        <label class="switch"><input type="checkbox" id="enabled" role="switch"><span class="track" aria-hidden="true"></span>
+          <span class="text">Check websites as I browse<small>Stops pages that look like copies of well-known sites.</small></span></label>
+        <label class="switch"><input type="checkbox" id="strict" role="switch"><span class="track" aria-hidden="true"></span>
+          <span class="text">Also stop on weak suspicions<small>Turns the orange “?” cases into full warnings. More false alarms, fewer misses.</small></span></label>
+      </section>
 
-    <h2>Update lists</h2>
-    <p class="muted">Verity can download the newest popular-site list (Tranco) and reported scam sites (phishunt). It connects only to those two sites, sends no cookies and nothing about your browsing, and only when you ask. Chrome will ask your permission the first time.</p>
-    <div class="actions">
-      <button class="primary" id="update">Update lists now</button>
-      <button id="reset-lists">Use the lists that came with Verity</button>
-    </div>
-    <div class="msg" id="update-msg" role="status"></div>
-    <ul class="reasons small" id="update-steps"></ul>
-    <label class="check"><input type="checkbox" id="auto"><span>Update automatically every week</span></label>
+      <section class="card" id="mine">
+        <h2><span data-icon="list" data-size="22"></span>My fake sites</h2>
+        <p class="desc">Add a fake or look-alike site and, if you know it, the real one. Verity will warn you and offer the real address.</p>
+        <div class="form-row">
+          <input type="text" id="fake" placeholder="Fake site, e.g. something.site" aria-label="Fake site" autocomplete="off" spellcheck="false">
+          <input type="text" id="real" placeholder="Real site, e.g. something.com" aria-label="Real site (optional)" autocomplete="off" spellcheck="false">
+          <button class="btn primary" id="add" type="button"><span data-icon="plus" data-size="16"></span>Add</button>
+        </div>
+        <div class="msg" id="msg" role="status"></div>
+        <table id="list"><thead><tr><th>Fake site</th><th>Real site</th><th></th></tr></thead><tbody></tbody></table>
+        <div class="empty" id="empty">Nothing here yet.</div>
+        <div class="actions">
+          <button class="btn sm" id="export" type="button"><span data-icon="download" data-size="16"></span>Export list</button>
+          <button class="btn sm" id="import-btn" type="button"><span data-icon="upload" data-size="16"></span>Import list</button>
+          <input type="file" id="import" accept="application/json" hidden>
+        </div>
+      </section>
 
-    <h2>About the data</h2>
-    <p id="data-info" class="muted"></p>
-    <p class="small muted">Everything runs on your device. Verity makes no network requests and sends nothing about the sites you visit to anyone.</p>
-    <p class="small muted">Popularity data: Tranco list (tranco-list.eu), which combines Cisco Umbrella, Majestic, Chrome UX Report and Cloudflare Radar data. Scam reports: phishunt.io (CC0). Attribution and licence terms of the upstream lists apply.</p>
-  </main>
+      <section class="card" id="trusted">
+        <h2><span data-icon="user" data-size="22"></span>Sites I chose to trust</h2>
+        <p class="desc">Verity will not warn about these. Remove one to check it again.</p>
+        <table id="allowed"><thead><tr><th>Site</th><th>Until</th><th></th></tr></thead><tbody></tbody></table>
+        <div class="empty" id="allowed-empty">No sites are trusted right now.</div>
+      </section>
+
+      <section class="card" id="lists">
+        <h2><span data-icon="refresh" data-size="22"></span>Lists and updates</h2>
+        <p class="desc">Verity can download the newest popular-site list, reported scam sites and public filter lists. It connects only to the sites listed under About, sends no cookies and nothing about your browsing, and only when you ask. Chrome asks your permission the first time.</p>
+        <div class="actions">
+          <button class="btn primary" id="update" type="button"><span data-icon="refresh" data-size="18"></span>Update lists now</button>
+          <button class="btn ghost" id="reset-lists" type="button">Use the lists that came with Verity</button>
+        </div>
+        <div class="msg" id="update-msg" role="status"></div>
+        <ul class="steps" id="update-steps"></ul>
+        <label class="switch"><input type="checkbox" id="auto" role="switch"><span class="track" aria-hidden="true"></span>
+          <span class="text">Update automatically every week<small>Off by default.</small></span></label>
+        <label class="switch"><input type="checkbox" id="extended" role="switch"><span class="track" aria-hidden="true"></span>
+          <span class="text">Extra coverage: Phishing.Database<small>Adds about 390,000 more phishing domains. The download is about 11 MB each update.</small></span></label>
+        <table id="sources"><thead><tr><th>Source</th><th class="num">Entries</th><th>Licence</th></tr></thead><tbody></tbody></table>
+        <p class="small muted" id="data-info"></p>
+      </section>
+
+      <section class="card" id="about">
+        <h2><span data-icon="lock" data-size="22"></span>About and privacy</h2>
+        <p>Everything runs on your device. Verity sends nothing about the sites you visit to anyone. It contacts these sites only when you update lists: <span class="mono">tranco-list.eu</span>, <span class="mono">phishunt.io</span>, <span class="mono">ublockorigin.github.io</span>, <span class="mono">curbengh.github.io</span> and, if you turn on extra coverage, <span class="mono">raw.githubusercontent.com</span>.</p>
+        <p class="small muted">Data: Tranco list (tranco-list.eu); phishunt.io; uBlock Origin “Badware risks” (uAssets, GPL-3.0); Phishing URL Blocklist by curben (CC BY-SA 4.0), built from PhishTank, OpenPhish and phishunt; Phishing.Database (MIT). The licences of the upstream lists apply.</p>
+      </section>
+    </main>
+  </div>
   <script type="module" src="options.js"></script>
 </body>
 </html>

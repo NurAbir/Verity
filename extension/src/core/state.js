@@ -7,7 +7,7 @@ export const SCHEMA_VERSION = 1;
 export function defaultState() {
   return {
     schemaVersion: SCHEMA_VERSION,
-    settings: { enabled: true, blockCaution: false, disclaimerAccepted: false, autoUpdate: false },
+    settings: { enabled: true, blockCaution: false, disclaimerAccepted: false, autoUpdate: false, extendedCoverage: false },
     userList: [],  // [{ fake, real|null, addedAt }]
     allowlist: [], // [{ domain, until|null, addedAt }]
   };
@@ -28,6 +28,7 @@ export function migrate(raw) {
       blockCaution: s.blockCaution === true,
       disclaimerAccepted: s.disclaimerAccepted === true,
       autoUpdate: s.autoUpdate === true,
+      extendedCoverage: s.extendedCoverage === true,
     },
     userList: Array.isArray(raw.userList) ? raw.userList.filter(validEntry) : [],
     allowlist: Array.isArray(raw.allowlist) ? raw.allowlist.filter(validAllow) : [],

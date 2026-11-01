@@ -76,7 +76,8 @@ chrome.runtime.onMessage.addListener((msg, sender, sendResponse) => {
     loadData().then((d) => sendResponse({
       meta: d.meta, degraded: d.degraded, source: d.source,
       counts: { trusted: d.trusted.size, extended: d.extended.size, brands: d.brands.length,
-        feedHosts: Object.keys(d.feed.hosts).length, lookalikeNames: d.brandIndex.size },
+        feedHosts: Object.keys(d.feed.hosts).length, lookalikeNames: d.brandIndex.size,
+        lists: d.blocklists.map((l) => ({ id: l.id, title: l.title, license: l.license, count: l.set.size })) },
       feedGeneratedAt: d.feed.generatedAt,
     }), (err) => sendResponse({ error: String(err) }));
     return true;

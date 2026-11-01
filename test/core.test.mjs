@@ -5,6 +5,7 @@ import { DomainSet, packDomains } from '../extension/src/core/domainset.js';
 import { splitDomain, normalizeUserDomain, isSameOrSubdomain } from '../extension/src/core/hostname.js';
 import { diffSegments } from '../extension/src/core/diff.js';
 import { editDistance, skeleton } from '../extension/src/core/lookalike.js';
+import { activeBlocklists, originsFor, BLOCKLISTS } from '../extension/src/config.js';
 import { addUserEntry, addAllow, isAllowed, migrate, pruneAllowlist, removeUserEntry, updateSettings, defaultState } from '../extension/src/core/state.js';
 
 test('hash40 is stable and within 40 bits', () => {
@@ -101,4 +102,13 @@ test('state: migrate repairs corrupt data; settings patch is sanitized', () => {
   assert.equal(m.userList.length, 1);
   assert.deepEqual(m.allowlist, []);
   assert.equal(updateSettings(defaultState(), { blockCaution: true }).settings.blockCaution, true);
+});
+
+test('permissions asked for match what is switched on', () => {
+  const base = originsFor({ extendedCoverage: false });
+  const extra = originsFor({ extendedCoverage: true });
+  assert.ok(!base.includes('https://raw.githubusercontent.com/*'));
+  assert.ok(extra.includes('https://raw.githubusercontent.com/*'));
+  assert.equal(activeBlocklists({ extendedCoverage: false }).length, BLOCKLISTS.filter((b) => !b.optional).length);
+  assert.equal(activeBlocklists({ extendedCoverage: true }).length, BLOCKLISTS.length);
 });

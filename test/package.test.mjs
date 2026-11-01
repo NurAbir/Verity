@@ -4,7 +4,7 @@ import assert from 'node:assert/strict';
 import { existsSync, readFileSync, readdirSync } from 'node:fs';
 import { dirname, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { SOURCES, UPDATE_ORIGINS } from '../extension/src/config.js';
+import { BLOCKLISTS, SOURCES, UPDATE_ORIGINS } from '../extension/src/config.js';
 
 const ext = resolve(fileURLToPath(new URL('../extension', import.meta.url)));
 const manifest = JSON.parse(readFileSync(resolve(ext, 'manifest.json'), 'utf8'));
@@ -40,12 +40,15 @@ test('pages never use innerHTML (addresses and reasons are untrusted text)', () 
   }
 });
 
-test('network: only config.js names outside addresses, and they match the optional permissions', () => {
-  const hosts = new Set(['https://tranco-list.eu/x', 'https://phishunt.io/x', SOURCES.trancoFull('ID'), SOURCES.trancoTop, SOURCES.trancoId, SOURCES.phishFeed]
-    .map((u) => new URL(u).origin + '/*'));
-  assert.deepEqual([...hosts].sort(), [...UPDATE_ORIGINS].sort());
+test('network: every configured address is https and covered by the optional permissions', () => {
+  const urls = [SOURCES.trancoTop, SOURCES.trancoId, SOURCES.trancoFull('ID'), SOURCES.phishFeed, ...BLOCKLISTS.flatMap((b) => b.urls)];
+  for (const u of urls) {
+    assert.equal(new URL(u).protocol, 'https:', u);
+    assert.ok(UPDATE_ORIGINS.includes(new URL(u).origin + '/*'), u);
+  }
+  assert.deepEqual([...manifest.optional_host_permissions].sort(), [...UPDATE_ORIGINS].sort());
   for (const dir of ['src/background', 'src/core', 'src/updater', 'pages']) for (const f of readdirSync(resolve(ext, dir)).filter((x) => x.endsWith('.js'))) {
-    const code = readFileSync(resolve(ext, dir, f), 'utf8').replace(/\/\*[\s\S]*?\*\//g, '').replace(/^\s*\/\/.*$/gm, '');
+    const code = readFileSync(resolve(ext, dir, f), 'utf8').replace(/\/\*[\s\S]*?\*\//g, '').replace(/^\s*\/\/.*$/gm, '').replace('http://www.w3.org/2000/svg', ''); // the SVG namespace is an identifier, not an address
     assert.ok(!/XMLHttpRequest|WebSocket|sendBeacon|EventSource/.test(code), `${dir}/${f}: unexpected network API`);
     assert.ok(!/https?:\/\/[a-z]/i.test(code), `${dir}/${f}: hard-coded address (put it in config.js)`);
   }

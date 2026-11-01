@@ -2,10 +2,11 @@
 // Layers run in this order and stop at the first that decides:
 //   1 unsupported/local address -> none     2 disabled -> none       3 person trusted it -> none
 //   4 person's own fake list -> danger      5 official brand domain -> none
-//   6 popular site (trusted tier) -> none   7 known-phishing feed -> danger
-//   8 look-alike rules (weaker if the domain at least exists in the larger list) -> warning/caution
+//   6 popular site (trusted tier) -> none   7 reported-scam feed (brand known) -> danger
+//   8 public filter lists (uBlock-style) -> danger   9 look-alike rules (gentler if in the larger list) -> warning/caution
 import { isIpHost, isSameOrSubdomain, normalizeHost, splitDomain } from './hostname.js';
 import { isAllowed } from './state.js';
+import { matchBlocklists } from './blocklist.js';
 import { findLookalikes, LEVEL_RANK, maxLevel } from './lookalike.js';
 
 const LOCAL_ENDINGS = ['.local', '.localhost', '.internal', '.lan', '.home', '.test', '.example', '.invalid'];
@@ -75,15 +76,30 @@ export function evaluate(urlString, { state, data, now = Date.now() }) {
     });
   }
 
-  let findings = findLookalikes(parts, data.brandIndex);
+  const lookalikes = findLookalikes(parts, data.brandIndex);
+  const realFrom = (fs) => {
+    const out = [];
+    for (const f of [...fs].sort((x, y) => LEVEL_RANK[y.level] - LEVEL_RANK[x.level])) {
+      if (f.real && !out.some((r) => r.domain === f.real)) out.push({ domain: f.real, brand: f.brandName });
+    }
+    return out.slice(0, 2);
+  };
+
+  const listHit = matchBlocklists(parts, data.blocklists ?? []);
+  if (listHit) {
+    return result({ ...b, tier }, 'danger', {
+      action: 'block',
+      findings: [{ rule: 'blocklist', level: 'danger', brandId: '', brandName: '', real: '', list: listHit.id,
+        reason: `This address is on a public list of known bad sites: ${listHit.title}.` }, ...lookalikes],
+      real: realFrom(lookalikes), // if the name also copies a known brand, offer that brand's real site
+    });
+  }
+
+  let findings = lookalikes;
   if (tier === 'extended') {
     // The domain exists in the larger list, so it is probably not brand new: lower our confidence one step.
     findings = findings.map((f) => (f.level === 'warning' ? { ...f, level: 'caution' } : f));
   }
   const level = findings.reduce((acc, f) => maxLevel(acc, f.level), 'none');
-  const real = [];
-  for (const f of findings.sort((x, y) => LEVEL_RANK[y.level] - LEVEL_RANK[x.level])) {
-    if (f.real && !real.some((r) => r.domain === f.real)) real.push({ domain: f.real, brand: f.brandName });
-  }
-  return result({ ...b, tier }, level, { action: actionFor(level, state.settings), findings, real: real.slice(0, 2) });
+  return result({ ...b, tier }, level, { action: actionFor(level, state.settings), findings, real: realFrom(findings) });
 }
